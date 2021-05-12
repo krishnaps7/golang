@@ -1,0 +1,66 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  creationTimestamp: "2020-10-07T06:23:35Z"
+  labels:
+    app.kubernetes.io/name: tf-product-api
+    helm.sh/chart: tf-product-api-0.0.1
+  name: tf-product-api-cleanup
+  namespace: glass
+  resourceVersion: "280937243"
+  selfLink: /apis/batch/v1beta1/namespaces/glass/cronjobs/tf-product-api-cleanup
+  uid: 54e7ca24-d6d8-490d-986c-e6fbc1f14787
+spec:
+  concurrencyPolicy: Forbid
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    metadata:
+      creationTimestamp: null
+    spec:
+      template:
+        metadata:
+          creationTimestamp: null
+        spec:
+          containers:
+          - command:
+            - yarn
+            - --silent
+            - --cwd
+            - tools/ecomdb-cleanup-job
+            - start
+            env:
+            - name: APP_ENV
+              value: production
+            - name: NODE_ENV
+              value: production
+            - name: TF_PRODUCT_API
+              value: http://tf-product-api.glass.svc.cluster.local:8080
+            - name: TF_PRODUCT_API_ECOM_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  key: ecom_write_api_token
+                  name: product-api-secrets
+            - name: INSTANA_AGENT_HOST
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: status.hostIP
+            image: registry.tools.adidas-group.com/dit-glass/tf-product-api:4224a7d
+            imagePullPolicy: IfNotPresent
+            name: tf-product-api-cleanup
+            resources: {}
+            terminationMessagePath: /dev/termination-log
+            terminationMessagePolicy: File
+          dnsPolicy: ClusterFirst
+          imagePullSecrets:
+          - name: glass-harbor
+          restartPolicy: Never
+          schedulerName: default-scheduler
+          securityContext: {}
+          terminationGracePeriodSeconds: 30
+  schedule: 30 9 * * *
+  startingDeadlineSeconds: 30
+  successfulJobsHistoryLimit: 3
+  suspend: false
+status:
+  lastScheduleTime: "2021-05-12T09:30:00Z"

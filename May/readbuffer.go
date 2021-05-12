@@ -6,9 +6,9 @@ import (
 )
 
 func main() {
-	var b = bytes.NewBuffer(make([]byte, 26))
+	var b = bytes.NewBuffer(make([]byte, 20))
 	var text = []string{
-		`data1`,
+		`data1data1data1data1data1data1data1`,
 		`data2`,
 		`data3`,
 	}

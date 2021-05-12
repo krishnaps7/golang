@@ -1,0 +1,25 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  labels:
+    app: xpoconnect_order_all_info_job
+  name: xpoconnect-order-all-info-job
+  # namespace: ingress-test
+spec:
+  concurrencyPolicy: Forbid
+  failedJobsHistoryLimit: 1
+  jobTemplate:      
+    spec:
+      template:
+        spec:
+          containers:
+          - image: gcr.io/xpo-nat-messaging-sbox/xpoconnect_order_all_info_job:2.0.4
+            imagePullPolicy: IfNotPresent
+            name: xpoconnect-order-all-info-job
+          dnsPolicy: ClusterFirst
+          restartPolicy: Never
+          terminationGracePeriodSeconds: 10
+  schedule: "*/1 * * * *"
+  startingDeadlineSeconds: 30
+  successfulJobsHistoryLimit: 3
+  suspend: false
